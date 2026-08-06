@@ -251,7 +251,7 @@ button, input, textarea { font: inherit; }
 .button:hover,
 .button:focus-visible,
 .header-cta:hover,
-.header-cta:focus-visible {
+.header-cta:focus-visible { 
   transform: translateY(-2px);
   box-shadow: var(--shadow-strong);
 }
@@ -818,14 +818,17 @@ button, input, textarea { font: inherit; }
 .site-footer p:nth-child(2) { text-align: center; }
 .site-footer p:last-child { text-align: right; }
 
+/* Keep all content visible even if scripts are blocked or load slowly. */
 .reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity .75s cubic-bezier(.2,.7,.2,1), transform .75s cubic-bezier(.2,.7,.2,1);
+  opacity: 1;
+  transform: none;
 }
 .reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+  animation: reveal-in .7s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes reveal-in {
+  from { opacity: .01; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes spin { to { rotate: 360deg; } }
@@ -898,38 +901,7 @@ button, input, textarea { font: inherit; }
 }
 
 </style>
-  <script defer>
-const menuButton = document.querySelector('.menu-button');
-const siteNav = document.querySelector('.site-nav');
 
-menuButton?.addEventListener('click', () => {
-  const open = menuButton.getAttribute('aria-expanded') === 'true';
-  menuButton.setAttribute('aria-expanded', String(!open));
-  siteNav?.classList.toggle('is-open', !open);
-});
-
-siteNav?.querySelectorAll('a').forEach((link) => {
-  link.addEventListener('click', () => {
-    menuButton?.setAttribute('aria-expanded', 'false');
-    siteNav.classList.remove('is-open');
-  });
-});
-
-const revealItems = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('is-visible');
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -45px' });
-
-revealItems.forEach((item) => observer.observe(item));
-
-document.getElementById('year').textContent = String(new Date().getFullYear());
-
-</script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -949,7 +921,8 @@ document.getElementById('year').textContent = String(new Date().getFullYear());
       <a href="#work"><span>01</span> Work</a>
       <a href="#experience"><span>02</span> Experience</a>
       <a href="#about"><span>03</span> About</a>
-      <a href="assets/Olivia-Phelps-Resume.pdf" target="_blank" rel="noreferrer"><span>04</span> Résumé</a>
+      <a href="#education"><span>04</span> Education</a>
+      <a href="assets/Olivia-Phelps-Resume.pdf" target="_blank" rel="noreferrer"><span>05</span> Résumé</a>
     </nav>
 
     <a class="header-cta" href="mailto:op.likaiyan@gmail.com">Get in touch</a>
@@ -1155,6 +1128,36 @@ document.getElementById('year').textContent = String(new Date().getFullYear());
       </div>
     </section>
 
+    <section class="experience section-pad education-section" id="education" aria-labelledby="education-title">
+      <div class="section-heading reveal">
+        <p class="section-kicker">Education &amp; involvement</p>
+        <h2 id="education-title">A technical foundation shaped by research, leadership, and hands-on building.</h2>
+      </div>
+
+      <div class="timeline">
+        <article class="timeline-item reveal">
+          <p class="timeline-date">2025—2029</p>
+          <div><h3>University of Pennsylvania</h3><p>Philadelphia, PA</p></div>
+          <p class="timeline-detail">Pursuing a double major in Computer Science and Cognitive Science; member of Penn High-Powered Rocketry's recovery team.</p>
+        </article>
+        <article class="timeline-item reveal">
+          <p class="timeline-date">Summer 2024</p>
+          <div><h3>Virginia Governor’s School</h3><p>Engineering program</p></div>
+          <p class="timeline-detail">Studied circuit design and developed practical soldering skills through hands-on technical work.</p>
+        </article>
+        <article class="timeline-item reveal">
+          <p class="timeline-date">2022—2025</p>
+          <div><h3>CyberPatriot</h3><p>Flint Hill School</p></div>
+          <p class="timeline-detail">Reached the Platinum Round three times, specializing in Cisco, Windows, and Linux; coached a Silver Division team that placed first in Virginia and fourth globally.</p>
+        </article>
+        <article class="timeline-item reveal">
+          <p class="timeline-date">Spring 2024</p>
+          <div><h3>Girls’ Security Mentee</h3><p>Cybersecurity training</p></div>
+          <p class="timeline-detail">Used Wireshark to inspect and analyze network traffic.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="contact section-pad" aria-labelledby="contact-title">
       <div class="contact-orb" aria-hidden="true"></div>
       <p class="section-kicker reveal">Let’s connect</p>
@@ -1171,5 +1174,43 @@ document.getElementById('year').textContent = String(new Date().getFullYear());
     <p>Designed for curiosity. Built for GitHub Pages.</p>
     <p>© <span id="year">2026</span> Olivia Phelps</p>
   </footer>
+
+  <script>
+    (() => {
+      const menuButton = document.querySelector('.menu-button');
+      const siteNav = document.querySelector('.site-nav');
+
+      menuButton?.addEventListener('click', () => {
+        const open = menuButton.getAttribute('aria-expanded') === 'true';
+        menuButton.setAttribute('aria-expanded', String(!open));
+        siteNav?.classList.toggle('is-open', !open);
+      });
+
+      siteNav?.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          menuButton?.setAttribute('aria-expanded', 'false');
+          siteNav.classList.remove('is-open');
+        });
+      });
+
+      const revealItems = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.08, rootMargin: '0px 0px -25px' });
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add('is-visible'));
+      }
+
+      const year = document.getElementById('year');
+      if (year) year.textContent = String(new Date().getFullYear());
+    })();
+  </script>
 </body>
 </html>
